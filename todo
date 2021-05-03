@@ -1,0 +1,75 @@
+
+
+- Setting
+    - Auto layout on / off
+    - Allow empty names on / off
+    - Allow commas as separators (cannot use in patterns when on)
+
+- Tooltip for pattern info?
+- bidirectional changes (changing label on actual tab group persist)
+
+
+BUG
+- One invalid causes no save (maybe just a better indicator that something is invalid and no saving)
+
+
+NICE
+- Make regex vs normal pattern a global option
+- If regex on, show pattern as valid or not
+- include current tabs in window on default view
+- default view with edit toggle
+- Drag rules for order
+- Keyboard shortcuts
+- Autocollapse groups after not used for x amount of time
+- Hold command, put the starting number of tab in each group name
+
+- Suggest domains based on current tabs open
+
+    
+- Could inject into page for interface (take up full width and right under address bar)
+- Left align groups
+- Tooltips?
+- Advanced toggle?
+- Decide on seed rules
+    - Email
+    - Social
+    - News
+    - Shopping
+
+
+DONE
+- Ids for rules
+- no-save
+- fix performance
+- preferred colors for tab groups
+- assign colors when creating rules
+- fix writes per operation
+- fix weird move thing
+- add top level nav
+- bulk edit mode
+- Show arrows on hover, move delete to right
+- Move remove to trash right
+- make name field smaller
+- Switch default matching to substrings with wildcards
+- If collapsed, add (count)
+- push all groups to the left and use key to decide order (configurable and off by default)
+- Fix unnecssary reordierng jitter
+- more responsive hook for new page nav (long page load delays group addition, pre nav?)
+- Spaces for multiple rules
+- Focus makes long rules go over multiline for ease of use
+- Three spaces for newline serialize for bulk (bidirectional)
+- Change cursor on disabled text
+- Auto focus new rules
+- Clear old storage entries for windows and rules
+- Add simple collapse all button
+- Clarify Onboarding button
+- Add check for chrome version
+- Fix collapse
+- Preseed with examples (email, social, )
+
+
+6.3.3
+
+- Animations for reordering feedback
+- Collapse button feedback
+- Color switch size bigger

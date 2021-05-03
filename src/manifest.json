@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Acid Tabs",
+  "description": "Auto-Grouping Magic for your Tabs",
+  "options_page": "options.html",
+  "background": { "service_worker": "background.bundle.js" },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "acid-32.png"
+  },
+  "icons": {
+    "128": "acid-128.png"
+  },
+  "permissions": [
+    "storage",
+    "webNavigation",
+    "tabs",
+    "tabGroups"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["content.styles.css", "acid-128.png", "acid-32.png"],
+      "matches": []
+    }
+  ],
+  "content_security_policy": {
+    "extension-pages": "script-src 'self' https://fonts.googleapis.com/* https://*.firebaseio.com; object-src 'self'"
+  }
+}
