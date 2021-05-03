@@ -88,6 +88,12 @@ const collapseBackground = debounce((state) => {
   chrome.runtime.sendMessage({ collapse: state, expand: !state })
 }, 100)
 
+// Async call to wayscript program to log new user event
+const logNewUserEvent = () => {
+  const url = 'https://45845.wayscript.io?env=prod';
+  fetch(url)
+};
+
 const Popup = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [groupRules, setGroupRules] = useState([])
@@ -123,6 +129,7 @@ const Popup = () => {
   
   const confirmInitial = async () => {
     set('hasConfirmed', true)
+    logNewUserEvent()
     await saveGroupRules(initialRules, true)
     setTimeout(updateBackground(), 3000)
     setHasConfirmed(true)
