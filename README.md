@@ -2,6 +2,10 @@
 
 Store Link - https://chrome.google.com/webstore/detail/acid-tabs/hgceopemmcmigbmhphbcgkeffommpjfc
 
+## Feature Requests
+
+If you have any feature requests for the Acid Tabs chrome extension, please submit an Issue describing the feature and use case. Please do this before you consider opening up a pull request for any changes that would largely impact the UX as I'd prefer to discuss that on an issue first.
+
 ## General Organization
 
 Popup - https://github.com/jdhayford/acid-extension/tree/master/src/pages/Popup
@@ -25,7 +29,7 @@ This should start a webpackdev server and creates a local build folder with the 
 
 ### Credits
 
-Shoutout to @lxieyang for creating one of my favorite chrome extension boilerplates. https://github.com/lxieyang/chrome-extension-boilerplate-react
+Shoutout to @lxieyang for creating one of my favorite chrome extension boilerplates out there https://github.com/lxieyang/chrome-extension-boilerplate-react
 
 
 
