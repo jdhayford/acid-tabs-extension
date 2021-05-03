@@ -18,7 +18,7 @@ In charge of orchestrating actual tab groups, including grouping/ungrouping tags
 
 ## Local Dev
 
-To run locally:
+To run and use the extension locally:
 
 ```
 npm install
