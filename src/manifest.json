@@ -25,5 +25,13 @@
   ],
   "content_security_policy": {
     "extension-pages": "script-src 'self' https://fonts.googleapis.com/* https://*.firebaseio.com; object-src 'self'"
+  },
+  "commands": {
+    "toggle-collapse": {
+      "suggested_key": {
+        "default": "Alt+Shift+C"
+      },
+      "description": "Toggle collapse"
+    }
   }
 }
