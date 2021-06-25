@@ -331,6 +331,17 @@ const RuleForm = (props) => {
     handleCollapseGroups(state)
   }
 
+  const updateCollapsed = async() => {
+    const newIsCollapsed = await isAnyAcidTabGroupCollapsed();
+    setIsCollapsed(newIsCollapsed);
+  }
+
+  const toggleCollapseListener = async (command) => {
+    if (command === 'toggle-collapse') {
+      setTimeout(updateCollapsed, 100);
+    }
+  };
+
   useEffect(() => {
     if (allValid) {
       saveGroupRules(formik.values.groupRules)
@@ -338,12 +349,11 @@ const RuleForm = (props) => {
     }
   }, [formik.values.groupRules])
 
-  useEffect(async () => {
-    const isCollapsed = await isAnyAcidTabGroupCollapsed();
-    if (isCollapsed) {
-      setIsCollapsed(isCollapsed);
-    }
+  useEffect(() => {
+    updateCollapsed();
     setTimeout(() => setShowBottomRow(true), 10)
+    chrome.commands.onCommand.addListener(toggleCollapseListener);
+    return () => chrome.commands.onCommand.removeListener(toggleCollapseListener);
   }, [])
 
   if (showConfirm) {

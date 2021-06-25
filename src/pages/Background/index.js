@@ -284,7 +284,7 @@ chrome.action.onClicked.addListener(tab => {
     kickoutNonMatchingTabs();
 });
 
-chrome.commands.onCommand.addListener(function(command) {
+chrome.commands.onCommand.addListener(command => {
     if (command === 'toggle-collapse') {
         updateTabGroups({ collapsed: !collapsed });
     }
