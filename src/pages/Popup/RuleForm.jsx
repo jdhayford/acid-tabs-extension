@@ -13,6 +13,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import EditIcon from '@material-ui/icons/Edit';
 import Fab from '@material-ui/core/Fab';
+import Tooltip from '@material-ui/core/Tooltip';
 import ClearAllIcon from '@material-ui/icons/ClearAll';
 import MenuIcon from '@material-ui/icons/Menu';
 import SortIcon from '@material-ui/icons/Sort';
@@ -503,17 +504,21 @@ const RuleForm = (props) => {
 
         <Row className={`bottom-row ${showBottomRow ? 'bottom-row--show' : ''}`}  style={{ flex: 10, marginBottom: '1rem', marginTop: '1rem' }} alignItems='flex-end' justifyContent='space-between' alwaysShow>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
-            {isCollapsed ? (
-              <Button onClick={() => handleCollapse(false)} style={{ marginLeft: '1rem', minWidth: '8rem' }}>
-                <ClearAllIcon style={{ paddingRight: '1.25rem' }} />
-                <div>Expand</div>
+            <Tooltip title="Hotkey: Alt+Shift+C">
+              <Button onClick={() => handleCollapse(!isCollapsed)} style={{ marginLeft: '1rem', minWidth: '8rem' }}>
+                {isCollapsed ? (
+                  <>
+                    <ClearAllIcon style={{ paddingRight: '1.25rem' }} />
+                    <div>Expand</div>
+                  </>
+                ) : (
+                  <>
+                    <SortIcon style={{ paddingRight: '0.5rem' }} />
+                    <div>Collapse</div>
+                  </>
+                )}
               </Button>
-            ) : (
-              <Button onClick={() => handleCollapse(true)} style={{ marginLeft: '1rem', minWidth: '8rem' }}>
-                <SortIcon style={{ paddingRight: '0.5rem' }} />
-                <div>Collapse</div>
-              </Button>
-            )}
+            </Tooltip>
             <Button onClick={() => setIsBulkMode(true)} style={{ marginLeft: '0.5rem' }}>
               <EditIcon style={{ paddingRight: '0.75rem' }} />
               <div>Bulk Edit</div>
