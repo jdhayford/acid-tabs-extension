@@ -1,5 +1,7 @@
 import debounce from 'lodash.debounce';
 
+let collapsed = false;
+
 const getAll = (ptrn) => {
     return new Promise((resolve) => {
         chrome.storage.sync.get(null, (data) => {
@@ -81,6 +83,9 @@ const getTabGroup = async (id) => {
 
 const updateTabGroups = async (args = {}) => {
     if (chrome.tabGroups) {
+        if (args.collapsed !== undefined) {
+            collapsed = args.collapsed;
+        }
         const tabGroups = await getAcidTabGroups();
         for (const tabGroupId of tabGroups) {
             try {
@@ -277,6 +282,12 @@ try {
 chrome.action.onClicked.addListener(tab => {
     assignAllTabsInWindow();
     kickoutNonMatchingTabs();
+});
+
+chrome.commands.onCommand.addListener(command => {
+    if (command === 'toggle-collapse') {
+        updateTabGroups({ collapsed: !collapsed });
+    }
 });
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
