@@ -14,6 +14,7 @@
   "permissions": [
     "storage",
     "webNavigation",
+    "tabs",
     "tabGroups"
   ],
   "web_accessible_resources": [
