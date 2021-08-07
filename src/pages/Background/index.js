@@ -223,7 +223,7 @@ const alignTabs = async (windowId) => {
         const orderedRules = rules.sort((a, b) => a.key - b.key);
         const currentTabGroups = await new Promise(resolve => chrome.tabGroups.query({ windowId }, resolve))
         const tabs = await new Promise(resolve => chrome.tabs.query({ windowId }, resolve))
-        let offset = 0;
+        let offset = tabs.filter(t => t.pinned).length;
         for (const r of orderedRules) {
             const groupId = await getGroupIdForRule(windowId, r);
             const tabsInGroup = tabs.filter(t => t.groupId === groupId);
