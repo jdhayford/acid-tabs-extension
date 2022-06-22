@@ -20,6 +20,8 @@ In charge of orchestrating actual tab groups, including grouping/ungrouping tags
 
 To run and use the extension locally:
 
+**Note:** Use Node version 10
+
 ```
 npm install
 npm start

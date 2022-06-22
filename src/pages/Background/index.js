@@ -76,10 +76,7 @@ const getAcidTabGroups = async (windowId = null) => {
     return windowGroupEntries.map(([k,v]) => v) || [];
 };
 
-const getTabGroup = async (id) => {
-    const tabGroups = await new Promise(resolve => chrome.tabGroups.query({}, resolve))
-    return tabGroups.find(t => t.id === id)
-};
+const getTabGroup = async (id) =>  new Promise(resolve => chrome.tabGroups.get(id, resolve));
 
 const updateTabGroups = async (args = {}) => {
     if (chrome.tabGroups) {
