@@ -76,10 +76,7 @@ const getAcidTabGroups = async (windowId = null) => {
     return windowGroupEntries.map(([k,v]) => v) || [];
 };
 
-const getTabGroup = async (id) => {
-    const tabGroups = await new Promise(resolve => chrome.tabGroups.query({}, resolve))
-    return tabGroups.find(t => t.id === id)
-};
+const getTabGroup = async (id) =>  new Promise(resolve => chrome.tabGroups.get(id, resolve));
 
 const updateTabGroups = async (args = {}) => {
     if (chrome.tabGroups) {
@@ -223,7 +220,13 @@ const alignTabs = async (windowId) => {
         const orderedRules = rules.sort((a, b) => a.key - b.key);
         const currentTabGroups = await new Promise(resolve => chrome.tabGroups.query({ windowId }, resolve))
         const tabs = await new Promise(resolve => chrome.tabs.query({ windowId }, resolve))
-        let offset = tabs.filter(t => t.pinned).length;
+        const numberOfPinnedTabs = tabs.reduce((prev, current) => {
+            if (current.pinned) {
+                prev++;
+            }
+            return prev;
+        }, 0);
+        let offset = numberOfPinnedTabs;
         for (const r of orderedRules) {
             const groupId = await getGroupIdForRule(windowId, r);
             const tabsInGroup = tabs.filter(t => t.groupId === groupId);
