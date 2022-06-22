@@ -25,7 +25,7 @@ npm install
 npm start
 ```
 
-This should start a webpackdev server and creates a local build folder with the proper source files. You can then select this folder from the "Manage Extensions" page on chrome, activate the developer settings and "Load Unpacked Extension".
+This should start a webpackdev server and creates a local `build/` folder with the proper source files. You can then select this folder from the "Manage Extensions" page on chrome, activate the developer settings and "Load Unpacked Extension".
 
 ### Credits
 

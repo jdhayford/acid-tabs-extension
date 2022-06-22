@@ -7,7 +7,7 @@ import Select from '@material-ui/core/Select';
 import GmailIconUrl from '../../assets/img/gmail-icon.png';
 import TwitterIconUrl from '../../assets/img/twitter-logo.png';
 import GoogleIconUrl from '../../assets/img/google-icon.png';
-
+import { COLORS } from '../Colors';
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -16,17 +16,6 @@ import './Popup.css';
 
 const ACID_GREEN = '#12FA73';
 const DARK_BLUE = '#282C34';
-
-const COLORS = {
-  'grey': '#BDC1C6',
-  'yellow': '#FDD663',
-  'blue': '#89B4F8',
-  'purple': '#D7ADFB',
-  'green': '#80C995',
-  'red': '#F28B82',
-  'cyan': '#78D9EC',
-  'pink': '#FF8BCB',
-};
 
 const Wrapper = styled.div`
   display: flex;

@@ -18,7 +18,8 @@ import ClearAllIcon from '@material-ui/icons/ClearAll';
 import MenuIcon from '@material-ui/icons/Menu';
 import SortIcon from '@material-ui/icons/Sort';
 import Draggable, {DraggableCore} from 'react-draggable'; // Both at the same time
-
+import { COLORS } from '../Colors'
+  
 import TabDemo from './TabDemo';
 
 
@@ -32,17 +33,6 @@ const ACID_ORANGE = '#fa7312';
 const ACID_RED = '#fb4453';
 const ACID_PURPLE = '#7312fa';
 const DARK_BLUE = '#282C34';
-
-const COLORS = {
-  'grey': '#BDC1C6',
-  'yellow': '#FDD663',
-  'blue': '#89B4F8',
-  'red': '#F28B82',
-  'green': '#80C995',
-  'purple': '#D7ADFB',
-  'cyan': '#78D9EC',
-  'pink': '#FF8BCB',
-};
 
 const Wrapper = styled.div`
   display: flex;
