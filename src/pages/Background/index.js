@@ -40,7 +40,7 @@ const set = (key, value) => {
     });
 };
 
-const tabColors = [ 'grey', 'yellow', 'blue', 'purple', 'green', 'red', 'pink', 'cyan' ];
+const tabColors = [ 'grey', 'yellow', 'blue', 'purple', 'green', 'red', 'pink', 'cyan', 'orange' ];
 
 function matchRuleShort(rule) {
     var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
