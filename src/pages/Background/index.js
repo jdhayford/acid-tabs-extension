@@ -275,9 +275,12 @@ chrome.tabs.onActivated.addListener(async ({ tabId, windowId }) => {
     handleTab(tabId)
 })
 
+chrome.runtime.onStartup.addListener(() => {
+    clearGroupKeys();
+});
+
 // Scan all existing tabs and assign them
 try {
-    clearGroupKeys();
     assignAllTabsInWindow();
     kickoutNonMatchingTabs();
 } catch (e) {
