@@ -40,6 +40,13 @@ const set = (key, value) => {
     });
 };
 
+const clearGroupKeys = () => {
+    chrome.storage.sync.get(null, (data) => {
+        const keys = Object.keys(data).filter((x) => x.startsWith('window:'));
+        chrome.storage.sync.remove(keys);
+    });
+};
+
 const tabColors = [ 'grey', 'yellow', 'blue', 'purple', 'green', 'red', 'pink', 'cyan' ];
 
 function matchRuleShort(rule) {
@@ -270,6 +277,7 @@ chrome.tabs.onActivated.addListener(async ({ tabId, windowId }) => {
 
 // Scan all existing tabs and assign them
 try {
+    clearGroupKeys();
     assignAllTabsInWindow();
     kickoutNonMatchingTabs();
 } catch (e) {
