@@ -7,4 +7,5 @@ export const COLORS = {
     'purple': '#D7ADFB',
     'cyan': '#78D9EC',
     'pink': '#FF8BCB',
+    'orange': '#FFA500',
 };
