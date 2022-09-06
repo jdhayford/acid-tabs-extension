@@ -1,5 +1,7 @@
 import debounce from 'lodash.debounce';
 
+const tabColors = [ 'grey', 'yellow', 'blue', 'purple', 'green', 'red', 'pink', 'cyan', 'orange' ];
+
 let collapsed = false;
 
 const getAll = (ptrn) => {
@@ -46,8 +48,6 @@ const clearGroupKeys = () => {
         chrome.storage.sync.remove(keys);
     });
 };
-
-const tabColors = [ 'grey', 'yellow', 'blue', 'purple', 'green', 'red', 'pink', 'cyan' ];
 
 function matchRuleShort(rule) {
     var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
