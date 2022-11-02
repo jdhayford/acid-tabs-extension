@@ -1,5 +1,7 @@
 import debounce from 'lodash.debounce';
 
+const tabColors = [ 'grey', 'yellow', 'blue', 'purple', 'green', 'red', 'pink', 'cyan', 'orange' ];
+
 let collapsed = false;
 
 const getAll = (ptrn) => {
@@ -40,7 +42,12 @@ const set = (key, value) => {
     });
 };
 
-const tabColors = [ 'grey', 'yellow', 'blue', 'purple', 'green', 'red', 'pink', 'cyan', 'orange' ];
+const clearGroupKeys = () => {
+    chrome.storage.sync.get(null, (data) => {
+        const keys = Object.keys(data).filter((x) => x.startsWith('window:'));
+        chrome.storage.sync.remove(keys);
+    });
+};
 
 function matchRuleShort(rule) {
     var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
@@ -267,6 +274,10 @@ chrome.webNavigation.onCommitted.addListener(async ({ tabId, url }) => {
 chrome.tabs.onActivated.addListener(async ({ tabId, windowId }) => {
     handleTab(tabId)
 })
+
+chrome.runtime.onStartup.addListener(() => {
+    clearGroupKeys();
+});
 
 // Scan all existing tabs and assign them
 try {
