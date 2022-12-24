@@ -17,9 +17,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import ClearAllIcon from '@material-ui/icons/ClearAll';
 import MenuIcon from '@material-ui/icons/Menu';
 import SortIcon from '@material-ui/icons/Sort';
-import Draggable, {DraggableCore} from 'react-draggable'; // Both at the same time
+import Draggable, { DraggableCore } from 'react-draggable'; // Both at the same time
 import { COLORS } from '../Colors'
-  
+
 import TabDemo from './TabDemo';
 
 
@@ -203,25 +203,25 @@ const FillColumn = styled.div`
 
 const getAll = (ptrn) => {
   return new Promise((resolve) => {
-      chrome.storage.sync.get(null, (data) => {
-          if (!data) {
-              resolve(undefined);
-          } else {
-              if (ptrn) {
-                  resolve(Object.entries(data).filter(([k, v]) => k.match(ptrn)));
-              } else {
-                  resolve(Object.entries(data));
-              }
-          }
-      
-      });
+    chrome.storage.sync.get(null, (data) => {
+      if (!data) {
+        resolve(undefined);
+      } else {
+        if (ptrn) {
+          resolve(Object.entries(data).filter(([k, v]) => k.match(ptrn)));
+        } else {
+          resolve(Object.entries(data));
+        }
+      }
+
+    });
   })
 };
 
 const getAcidTabGroups = async (windowId = null) => {
   const pattern = windowId ? `window:${windowId}:rule:.*:groupId` : `window:.*:rule:.*:groupId`
   const windowGroupEntries = await getAll(pattern);
-  return windowGroupEntries.map(([k,v]) => v) || [];
+  return windowGroupEntries.map(([k, v]) => v) || [];
 };
 
 const isAnyAcidTabGroupCollapsed = async () => {
@@ -301,7 +301,7 @@ const RuleForm = (props) => {
   const allowDown = index => index < (formik.values.groupRules && formik.values.groupRules.length - 1);
   const allValid = formik.values.groupRules.every(rule => rule.name.length > 0 && rule.pattern.length > 0)
   const changed = formik.dirty || isDirty;
-  
+
   const textToRules = (rawText) => {
     const lines = rawText.split('\n');
     const rules = lines.map((line, i) => lineToRule(line, i)).filter(r => !!r)
@@ -322,7 +322,7 @@ const RuleForm = (props) => {
     handleCollapseGroups(state)
   }
 
-  const updateCollapsed = async() => {
+  const updateCollapsed = async () => {
     const newIsCollapsed = await isAnyAcidTabGroupCollapsed();
     setIsCollapsed(newIsCollapsed);
   }
@@ -387,12 +387,12 @@ const RuleForm = (props) => {
       return movedRule[i];
     }
 
-    
-    if (movedRule[i-1] == 'down') {
+
+    if (movedRule[i - 1] == 'down') {
       if (i === 1) return 'fade';
       return 'up'
     }
-    if (movedRule[i+1] == 'up') {
+    if (movedRule[i + 1] == 'up') {
       if (i === 0) return 'fade';
       return 'down'
     }
@@ -492,7 +492,7 @@ const RuleForm = (props) => {
           </Row>
         ))}
 
-        <Row className={`bottom-row ${showBottomRow ? 'bottom-row--show' : ''}`}  style={{ flex: 10, marginBottom: '1rem', marginTop: '1rem' }} alignItems='flex-end' justifyContent='space-between' alwaysShow>
+        <Row className={`bottom-row ${showBottomRow ? 'bottom-row--show' : ''}`} style={{ flex: 10, marginBottom: '1rem', marginTop: '1rem' }} alignItems='flex-end' justifyContent='space-between' alwaysShow>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
             <Tooltip title="Hotkey: Alt+Shift+C">
               <Button onClick={() => handleCollapse(!isCollapsed)} style={{ marginLeft: '1rem', minWidth: '8rem' }}>
@@ -524,4 +524,3 @@ const RuleForm = (props) => {
 };
 
 export default RuleForm;
-  
