@@ -9,14 +9,14 @@ export class StorageManager {
         this.storageArea = strategy;
     }
 
-    getAll = (ptrn) => {
+    getAll = (pattern) => {
         return new Promise((resolve) => {
             this.storageArea.get(null, (data) => {
                 if (!data) {
                     resolve(undefined);
                 } else {
-                    if (ptrn) {
-                        resolve(Object.entries(data).filter(([k, v]) => k.match(ptrn)));
+                    if (pattern) {
+                        resolve(Object.entries(data).filter(([k, v]) => k.match(pattern)));
                     } else {
                         resolve(Object.entries(data));
                     }
