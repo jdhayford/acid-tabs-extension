@@ -1,77 +1,38 @@
 import debounce from 'lodash.debounce';
+import { localStorage, syncStorage } from './storageManager';
 
-const tabColors = [ 'grey', 'yellow', 'blue', 'purple', 'green', 'red', 'pink', 'cyan', 'orange' ];
+const tabColors = ['grey', 'yellow', 'blue', 'purple', 'green', 'red', 'pink', 'cyan', 'orange'];
 
 let collapsed = false;
 
-const getAll = (ptrn) => {
-    return new Promise((resolve) => {
-        chrome.storage.sync.get(null, (data) => {
-            if (!data) {
-                resolve(undefined);
-            } else {
-                if (ptrn) {
-                    resolve(Object.entries(data).filter(([k, v]) => k.match(ptrn)));
-                } else {
-                    resolve(Object.entries(data));
-                }
-            }
-        
-        });
-    })
-};
 
-const get = (key) => {
-    return new Promise((resolve) => {
-        chrome.storage.sync.get(key, (data) => {
-            if (!data) {
-                resolve(undefined);
-            } else {
-                resolve(data[key]);
-            }
-        
-        });
-    })
-};
-
-const set = (key, value) => {
-    return new Promise((resolve) => {
-        chrome.storage.sync.set({ [key]: value }, (data) => {
-            resolve(data);
-        });
-    });
-};
-
-const clearGroupKeys = () => {
-    chrome.storage.sync.get(null, (data) => {
-        const keys = Object.keys(data).filter((x) => x.startsWith('window:'));
-        chrome.storage.sync.remove(keys);
-    });
+const clearAllWindowKeys = () => {
+    syncStorage.removeAll('window:');
+    localStorage.removeAll('window:');
 };
 
 function matchRuleShort(rule) {
     var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
     return new RegExp(rule.split("*").map(escapeRegex).join(".*"));
-}
+};
 
-const getRules = async () => {
-    const groupRules = await get('groupRules');
+const getGroupRules = async () => {
+    const groupRules = await syncStorage.get('groupRules');
     return groupRules ? groupRules.sort((a, b) => a.key - b.key) : [];
-}
+};
 
 const getCurrentWindow = async () => {
     const window = await chrome.windows.getCurrent();
     return window;
-}
-
+};
 
 const getRuleForTabGroup = async (tabGroupId) => {
-    const windowGroupEntries = await getAll(`window:.*:rule:.*:groupId`);    
-    const match = windowGroupEntries.find(([k,v]) => v === tabGroupId);
+    const windowGroupEntries = await localStorage.getAll(`window:.*:rule:.*:groupId`);
+    const match = windowGroupEntries.find(([k, v]) => v === tabGroupId);
     if (match) {
         const [k, v] = match;
         const ruleId = k.replace(new RegExp('window:.*:rule:'), '').replace(':groupId', '')
-        const groupRules = await get('groupRules');
+        const groupRules = await getGroupRules()
         return groupRules.find(r => r.id.toString() === ruleId);
     }
     return null;
@@ -79,11 +40,11 @@ const getRuleForTabGroup = async (tabGroupId) => {
 
 const getAcidTabGroups = async (windowId = null) => {
     const pattern = windowId ? `window:${windowId}:rule:.*:groupId` : `window:.*:rule:.*:groupId`
-    const windowGroupEntries = await getAll(pattern);
-    return windowGroupEntries.map(([k,v]) => v) || [];
+    const windowGroupEntries = await localStorage.getAll(pattern);
+    return windowGroupEntries.map(([k, v]) => v) || [];
 };
 
-const getTabGroup = async (id) =>  new Promise(resolve => chrome.tabGroups.get(id, resolve));
+const getTabGroup = async (id) => new Promise(resolve => chrome.tabGroups.get(id, resolve));
 
 const updateTabGroups = async (args = {}) => {
     if (chrome.tabGroups) {
@@ -111,7 +72,7 @@ const updateTabGroups = async (args = {}) => {
 const kickoutNonMatchingTabs = async () => {
     const window = await getCurrentWindow();
     const tabGroups = await getAcidTabGroups();
-    const rules = await getRules();
+    const rules = await getGroupRules();
     const allTabs = await chrome.tabs.query({ windowId: window.id });
     for (const tabGroupId of tabGroups) {
         const tabsInGroup = allTabs.filter(t => t.groupId === tabGroupId)
@@ -132,17 +93,17 @@ const getColorForRule = (rule, rules) => {
 
 const getGroupIdForRule = async (windowId, rule) => {
     const key = `window:${windowId}:rule:${rule.id}:groupId`;
-    const ruleId = await get(key);
+    const ruleId = await localStorage.get(key);
     return ruleId;
 }
 
 const setGroupIdForRule = async (rule, windowId, groupId) => {
     const key = `window:${windowId}:rule:${rule.id}:groupId`;
-    await set(key, groupId);
+    await localStorage.set(key, groupId);
 }
 
 const getActiveGroupIds = async (windowId) => {
-    const rules = await getRules();
+    const rules = await getGroupRules();
     const groupIds = await Promise.all(rules.map(r => getGroupIdForRule(windowId, r)));
     return groupIds.filter(gId => !!gId) || [];
 }
@@ -167,21 +128,21 @@ const checkForRuleMatch = (url, rules) => {
             if (url.match(pattern)) return rule;
         }
     }
-   return null;
+    return null;
 }
 
 const clearOldWindowEntries = async () => {
-    const allWindowEntries = await getAll('window:.*:tabGroups');
+    const allWindowEntries = await localStorage.getAll('window:.*:tabGroups');
     const windows = await chrome.windows.getAll();
     const oldWindowEntries = allWindowEntries.filter(([k, v]) => !windows.some(w => k.includes(`window:${w.id}:tabGroups`)))
 
     const oldKeys = oldWindowEntries.map(([k, _]) => k);
-    await chrome.storage.sync.remove(oldKeys)
+    await localStorage.remove(oldKeys);
 }
 
 const clearOldEntries = async () => {
-    const allRuleGroupEntries = await getAll('window:.*:rule:.*:groupId');
-    const rules = await getRules();
+    const allRuleGroupEntries = await localStorage.getAll('window:.*:rule:.*:groupId');
+    const rules = await getGroupRules();
     const oldRuleGroupEntries = allRuleGroupEntries.filter(([k, v]) => !rules.some(r => k.includes(`rule:${r.id}:groupId`)))
 
     for (const [k, groupId] of oldRuleGroupEntries) {
@@ -192,20 +153,20 @@ const clearOldEntries = async () => {
         }
     }
     const oldKeys = oldRuleGroupEntries.map(([k, _]) => k);
-    await chrome.storage.sync.remove(oldKeys)
+    await localStorage.remove(oldKeys);
 }
 
 const updateTabGroupForRule = async (windowId, groupId, rule) => {
     if (chrome.tabGroups) {
-        const rules = await getRules();
+        const rules = await getGroupRules();
         const color = getColorForRule(rule, rules);
         const group = await getTabGroup(groupId);
         if (!group) return;
 
         const tabs = await new Promise(resolve => chrome.tabs.query({ windowId }, resolve));
         const tabsInGroup = tabs.filter(t => t.groupId === groupId);
-        const title =  group.collapsed && tabsInGroup.length ? `${rule.name} (${tabsInGroup.length})` : rule.name;
-        chrome.tabGroups.update(groupId, { title, color })
+        const title = group.collapsed && tabsInGroup.length ? `${rule.name} (${tabsInGroup.length})` : rule.name;
+        chrome.tabGroups.update(groupId, { title, color });
     }
 }
 
@@ -215,15 +176,22 @@ const getOrCreateTabGroup = async (windowId, tabId, existingGroupId) => {
     try {
         groupId = await chrome.tabs.group({ tabIds: tabId, groupId: existingGroupId, createProperties })
     } catch (e) {
-        const createProperties = { windowId };
-        groupId = await chrome.tabs.group({ tabIds: tabId, createProperties })
+        const isNoGroupError = e.message.startsWith('No group with id');
+        if (isNoGroupError) {
+            const createProperties = { windowId };
+            groupId = await chrome.tabs.group({ tabIds: tabId, createProperties });
+            return groupId
+        }
+
+        throw e
     }
+
     return groupId;
 }
 
 const alignTabs = async (windowId) => {
     if (chrome.tabGroups) {
-        const rules = await getRules();
+        const rules = await getGroupRules();
         const orderedRules = rules.sort((a, b) => a.key - b.key);
         const currentTabGroups = await new Promise(resolve => chrome.tabGroups.query({ windowId }, resolve))
         const tabs = await new Promise(resolve => chrome.tabs.query({ windowId }, resolve))
@@ -237,22 +205,23 @@ const alignTabs = async (windowId) => {
                         console.log(chrome.runtime.lastError.message);
                     }
                 })
-                // await new Promise(resolve => chrome.tabGroups.move(groupId, { index: 0 }, resolve))
+
                 offset = offset + tabsInGroup.length;
             }
         }
     }
 }
 
-const handleTab = async (tabId) => {
+const handleTab = async (tabId, retryCount = 3) => {
     try {
         const tab = await chrome.tabs.get(tabId);
         const windowId = tab.windowId;
-        const rules = await getRules();
+        const rules = await getGroupRules();
         const rule = checkForRuleMatch(tab.url, rules) || null;
-        if (rule) {
+        if (rule && !tab.pinned) {
             const existingGroupId = await getGroupIdForRule(windowId, rule);
             const groupId = await getOrCreateTabGroup(windowId, tabId, existingGroupId);
+
             updateTabGroupForRule(windowId, groupId, rule)
             if (existingGroupId !== groupId) {
                 await setGroupIdForRule(rule, windowId, groupId)
@@ -263,20 +232,36 @@ const handleTab = async (tabId) => {
             if (inAcidTabGroup) await chrome.tabs.ungroup(tab.id);
         }
     } catch (e) {
+        // Extra retry logic for dealing with cases where a tab is still being dragged by user
+        const isTabMoveError = e.message == 'Tabs cannot be edited right now (user may be dragging a tab).';
+        if (isTabMoveError && retryCount > 0) {
+            const delay = 250 * retryCount;
+            await new Promise(res => setTimeout(res, delay))
+            return handleTab(tabId, retryCount - 1)
+        }
+
         console.error(e.stack)
     }
 }
+
 
 chrome.webNavigation.onCommitted.addListener(async ({ tabId, url }) => {
     handleTab(tabId)
 })
 
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
+    if (changeInfo.url || changeInfo.groupId == -1) {
+        handleTab(tabId)
+    }
+})
+
 chrome.tabs.onActivated.addListener(async ({ tabId, windowId }) => {
-    handleTab(tabId)
+    // Use larger retry count due to higher probability of user still dragging tab
+    handleTab(tabId, 5)
 })
 
 chrome.runtime.onStartup.addListener(() => {
-    clearGroupKeys();
+    clearAllWindowKeys();
 });
 
 // Scan all existing tabs and assign them
@@ -317,7 +302,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
 const handleTabGroupUpdate = async (tabGroup) => {
     alignTabs(tabGroup.windowId)
-    const rules = await getRules();
+    const rules = await getGroupRules();
     for (const r of rules) {
         const gId = await getGroupIdForRule(tabGroup.windowId, r);
         if (gId === tabGroup.id) {

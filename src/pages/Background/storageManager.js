@@ -46,7 +46,13 @@ export class StorageManager {
         });
     };
 
-    removeAll = (pattern) => {
+    remove = (keys) => {
+        return new Promise((resolve) => {
+            this.storageArea.remove(keys, resolve);
+        });
+    };
+
+    removePattern = (pattern) => {
         return new Promise((resolve) => {
             this.storageArea.get(null, (data) => {
                 const keys = Object.keys(data).filter((x) => x.startsWith(pattern));
@@ -58,4 +64,4 @@ export class StorageManager {
 }
 
 export const localStorage = new StorageManager(chrome.storage.local);
-export const syncStorage = new StorageManager(chrome.storage.local);
+export const syncStorage = new StorageManager(chrome.storage.sync);
