@@ -1,6 +1,6 @@
 {
   "name": "acid-tabs",
-  "version": "6.5.6",
+  "version": "6.5.7",
   "description": "Auto-Grouping magic for Chrome Tabs",
   "license": "MIT",
   "repository": {
@@ -25,6 +25,7 @@
     "react-dom": "^17.0.1",
     "react-draggable": "^4.4.3",
     "react-hot-loader": "^4.13.0",
+    "sass": "^1.56.1",
     "styled-components": "^5.2.1"
   },
   "devDependencies": {

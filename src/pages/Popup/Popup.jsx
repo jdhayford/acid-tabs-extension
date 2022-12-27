@@ -5,8 +5,8 @@ import './Fix';
 import './Popup.css';
 import RuleForm from './RuleForm';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import { get, set } from './utils';
 import UpgradeNotice from './UpgradeNotice';
+import { syncStorage } from '../Background/storageManager';
 
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
@@ -70,18 +70,18 @@ const ContentWrapper = styled.div`
 `;
 
 const initialRules = [
-  { key: 0, name: 'mail' , pattern: 'mail.google.com outlook.com https://mail.*', color: 'grey' },
-  { key: 1, name: 'google' , pattern: 'google.com', color: 'blue' },
-  { key: 2, name: 'social' , pattern: 'twitter.com instagram.com linkedin.com', color: 'yellow' },
-  { key: 3, name: 'entertainment' , pattern: 'reddit.com youtube.com pinterest.com', color: 'purple' },
-  { key: 4, name: 'news' , pattern: 'news.*', color: 'green' },
+  { key: 0, name: 'mail', pattern: 'mail.google.com outlook.com https://mail.*', color: 'grey' },
+  { key: 1, name: 'google', pattern: 'google.com', color: 'blue' },
+  { key: 2, name: 'social', pattern: 'twitter.com instagram.com linkedin.com', color: 'yellow' },
+  { key: 3, name: 'entertainment', pattern: 'reddit.com youtube.com pinterest.com', color: 'purple' },
+  { key: 4, name: 'news', pattern: 'news.*', color: 'green' },
 ]
 
-const rule = ( key = 0, pattern = '', name = 'rule' ) => ({ key, pattern, name })
+const rule = (key = 0, pattern = '', name = 'rule') => ({ key, pattern, name })
 const getRandomInt = max => Math.floor(Math.random() * Math.floor(max));
 
 const updateBackground = debounce(() => {
-  chrome.runtime.sendMessage({updated: true})
+  chrome.runtime.sendMessage({ updated: true })
 }, 250)
 
 const collapseBackground = debounce((state) => {
@@ -100,10 +100,10 @@ const Popup = () => {
   const [formKey, setFormKey] = useState('initial')
   const [value, setValue] = useState(0);
   const [hasConfirmed, setHasConfirmed] = useState(false);
-  
+
   useEffect(async () => {
-    const { groupRules } = await get('groupRules');
-    const { hasConfirmed } = await get('hasConfirmed');
+    const groupRules = await syncStorage.get('groupRules');
+    const hasConfirmed = await syncStorage.get('hasConfirmed');
     setHasConfirmed(hasConfirmed)
     setGroupRules(groupRules || [])
     setIsLoading(false)
@@ -111,24 +111,24 @@ const Popup = () => {
 
 
   const rerenderForm = () => {
-    const rand = Math.floor(Math.random()*1000)
+    const rand = Math.floor(Math.random() * 1000)
     setFormKey(`form-${rand}`)
   }
 
-  const saveGroupRules = async (rules, shouldRefresh=false) => {
+  const saveGroupRules = async (rules, shouldRefresh = false) => {
     const rulesWithIds = rules.map((r) => {
       if (r.id) return r;
       r.id = getRandomInt(100000);
       return r;
     })
-    await set('groupRules', rulesWithIds)
+    await syncStorage.set('groupRules', rulesWithIds)
     setGroupRules(rulesWithIds)
     updateBackground()
     if (shouldRefresh) rerenderForm()
   }
-  
+
   const confirmInitial = async () => {
-    set('hasConfirmed', true)
+    syncStorage.set('hasConfirmed', true)
     logNewUserEvent()
     await saveGroupRules(initialRules, true)
     setTimeout(updateBackground(), 3000)
