@@ -1,22 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import formik, { Formik, Field, Form, useFormik, FieldArray } from "formik";
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import DoneIcon from '@material-ui/icons/Check';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import EditIcon from '@material-ui/icons/Edit';
+
+import data from '@emoji-mart/data'
+import Picker from '@emoji-mart/react'
+
+import ClearAllIcon from '@material-ui/icons/ClearAll';
+import SortIcon from '@material-ui/icons/Sort';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import Fab from '@material-ui/core/Fab';
 import Tooltip from '@material-ui/core/Tooltip';
-import ClearAllIcon from '@material-ui/icons/ClearAll';
-import MenuIcon from '@material-ui/icons/Menu';
-import SortIcon from '@material-ui/icons/Sort';
 import Draggable, { DraggableCore } from 'react-draggable'; // Both at the same time
 import { COLORS } from '../Colors'
 
@@ -27,6 +28,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
 import './Popup.css';
+import EmojiModal from './EmojiModal';
 
 const ACID_GREEN = '#12FA73';
 const ACID_ORANGE = '#fa7312';
@@ -46,6 +48,24 @@ const Wrapper = styled.div`
     flex-direction: column !important;
     justify-content: space-between !important;
     height: 100% !important;
+  }
+
+  .reaction {
+    position: absolute;
+    overflow: visible;
+    width: 1rem;
+    height: 1rem;
+    align-self: flex-end;
+    margin-left: 6.5rem;
+    padding-bottom: 0.5rem;
+    z-index: 10;
+    color: #626C7F;
+
+    &:hover {
+      cursor: pointer;
+      opacity: 0.9;
+      color: inherit;
+    }
   }
 
   .icon {
@@ -246,6 +266,8 @@ const RuleForm = (props) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showBottomRow, setShowBottomRow] = useState(false);
   const [movedRule, setMovedRule] = useState({});
+  const [showEmojiRow, setShowEmojiRow] = useState(null);
+
   const formik = useFormik({
     initialValues: {
       groupRules
@@ -295,7 +317,14 @@ const RuleForm = (props) => {
     }
     formik.setFieldValue(formik.values.groupRules.push(newRule));
     setNewestRule(formik.values.groupRules.length)
-  }
+  };
+
+  const handleEmojiSelection = (index, emoji) => {
+    formik.values.groupRules[index].name = emoji + ' ' + formik.values.groupRules[index].name;
+    setShowEmojiRow(null);
+    setIsDirty(true);
+    saveGroupRules(formik.values.groupRules);
+  };
 
   const allowUp = index => index > 0;
   const allowDown = index => index < (formik.values.groupRules && formik.values.groupRules.length - 1);
@@ -404,6 +433,11 @@ const RuleForm = (props) => {
 
   return (
     <Wrapper style={{}}>
+      <EmojiModal
+        open={showEmojiRow != null}
+        handleClose={() => setShowEmojiRow(null)}
+        handleEmojiSelection={(emoji) => handleEmojiSelection(showEmojiRow, emoji)}
+      />
       <br />
       <form onSubmit={formik.handleSubmit}>
         {/* <Icon style={{ position: 'absolute' }}><ArrowBackIcon /></Icon> */}
@@ -446,6 +480,7 @@ const RuleForm = (props) => {
         )} */}
         {formik.values.groupRules.map((groupRule, i) => (
           <Row className={getMove(i) ? `moving moving--${getMove(i)} ${indirectlyMoved(i) ? 'moving--indirect' : ''}` : ''} key={groupRule.key || '0'} alignItems='flex-end' style={{ paddingLeft: '1rem', boxSizing: 'border-box' }}>
+            <svg className="reaction" onClick={() => setShowEmojiRow(i)} transform="scale(1.25, 1.25)" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path fillRule="evenodd" clipRule="evenodd" d="M12 1h-1v3H8v1h3v3h1V5h3V4h-3V1zM6 4.022A5.5 5.5 0 1 0 11.978 10h-1.005A4.5 4.5 0 1 1 6 5.027V4.022zM4.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm2 2.5c.712 0 1.355-.298 1.81-.776l.707.708A3.49 3.49 0 0 1 6.5 12.5a3.49 3.49 0 0 1-2.555-1.108l.708-.708A2.493 2.493 0 0 0 6.5 11.5zm2-2.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" /></svg>
             <TextField
               style={{ minWidth: '8rem' }}
               key={`groupRules.${i}.name`}
@@ -462,11 +497,11 @@ const RuleForm = (props) => {
               fullWidth
               key={`groupRules.${i}.pattern`}
               name={`groupRules.${i}.pattern`}
-              label={shouldShowLabel(i) ? "URL Pattern (space separated for multiple)" : null}
+              label={shouldShowLabel(i) ? 'URL Pattern (space separated for multiple)' : null}
               value={groupRule.pattern}
-              error={formik.dirty && groupRule.pattern.length === 0}
               required
               multiline
+              error={formik.dirty && groupRule.pattern.length === 0}
               placeholder='URL Pattern ("google.com")'
               onChange={formik.handleChange}
             />

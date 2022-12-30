@@ -8,14 +8,6 @@ import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import UpgradeNotice from './UpgradeNotice';
 import { syncStorage } from '../Background/storageManager';
 
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import HomeIcon from '@material-ui/icons/Home';
-import SettingsIcon from '@material-ui/icons/Settings';
-import ListIcon from '@material-ui/icons/List';
-import TabIcon from '@material-ui/icons/Tab';
 import debounce from 'lodash.debounce';
 
 const theme = createMuiTheme({
@@ -35,6 +27,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     width: 40rem;
     min-height: 20rem;
+    height: 100vh;
     color: white;
   }
 `
