@@ -37,7 +37,7 @@ const EmojiModal = (props) => {
       style={modalStyle}
       onClick={() => handleClose()}
     >
-      <PickerWrapper onClick={(e) => e.stopPropogation()}>
+      <PickerWrapper onClick={(e) => e.stopPropagation()}>
         <Picker
           className="picker"
           autoFocus
